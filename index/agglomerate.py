@@ -2,7 +2,7 @@ import fire
 import json
 import math
 
-def agglomerate(input_file, chunk_length=180, overlap=60):
+def agglomerate(input_file, output_file, chunk_length=180, overlap=60):
     mini_chunk_length = math.gcd(chunk_length, overlap)
     assert mini_chunk_length > 1, "You don't actually want the moving window to be 1 second long..."
     with open(input_file, 'r+') as f:
@@ -28,8 +28,6 @@ def agglomerate(input_file, chunk_length=180, overlap=60):
             }
     if current_mini_chunk['text'] != "":
         mini_chunks.append(current_mini_chunk)
-    with open(input_file + ".mini_chunks.json", "w+") as f:
-        json.dump(mini_chunks, f)
     
     num_mini_chunks_per_chunk = chunk_length // mini_chunk_length
     num_mini_chunks_per_overlap = overlap // mini_chunk_length
@@ -69,6 +67,15 @@ def agglomerate(input_file, chunk_length=180, overlap=60):
     
     with open(input_file + ".chunks.json", "w+") as f:
         json.dump(chunks, f)
+
+def agglomerate_all(metadata_file, input_dir, output_dir, chunk_length=180, overlap=60):
+    with open(metadata_file, "r") as f:
+        metadata = json.load(f)
+    for episode in metadata:
+        agglomerate(f"{input_dir}/{episode['slug']}.segments.json", 
+            f"{output_dir}/{episode['slug']}.chunks.json", chunk_length, overlap)
+
+    
 
 if __name__ == '__main__':
     fire.Fire(agglomerate)

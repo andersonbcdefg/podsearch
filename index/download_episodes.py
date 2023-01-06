@@ -9,8 +9,8 @@ from datetime import datetime
 from dateutil.parser import parse
 import pathlib
 
-def download(xml, show_title, output_dir=".", test=False):
-	feed = open(xml, 'r+')
+def download(xml_file, metadata_file, output_dir=".", test=False):
+	feed = open(xml_file, 'r+')
 	soup = BeautifulSoup(feed, 'xml')
 	items = soup.find_all('item')
 	links = [i.find('enclosure')['url'] for i in items]
@@ -34,7 +34,6 @@ def download(xml, show_title, output_dir=".", test=False):
 			"link": links[i]
 		} for i in range(len(links))
 	]
-	metadata_file = pathlib.Path(output_dir) / f"{show_title}.metadata.json"
 	with open(metadata_file, "w+") as f:
 		json.dump(metadata, f)
 		

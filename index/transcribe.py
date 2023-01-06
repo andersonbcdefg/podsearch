@@ -1,0 +1,28 @@
+from functional import seq
+import fire
+import whisper
+import json
+import pathlib
+import tqdm
+
+def transcribe_all(input_dir, metadata_file, output_dir, model_name="small.en", audio_format="mp3"):
+    print(f"Loading model {model_name}...")
+    model = whisper.load_model(model_name)
+    print("Model loaded. Transcribing...")
+    with open(metadata_file, "r") as f:
+        metadata = json.load(f)
+    for episode in metadata:
+        episode_file = pathlib.Path(input_dir) / f"{episode['slug']}.{audio_format}"
+        print(f"Transcribing {episode_file} into {output_dir}...")
+        result = model.transcribe(str(episode_file))
+        output = seq(result["segments"]).map(lambda x: {
+            "text": x["text"], 
+            "start": x["start"], 
+            "end": x["end"]
+        }).to_list()
+        with open(f"{episode['slug']}.segments.json", "w+") as f:
+            json.dump(output, f)
+
+
+if __name__ == '__main__':
+    fire.Fire(transcribe_all)

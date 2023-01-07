@@ -1,3 +1,4 @@
+import os
 import fire
 from bs4 import BeautifulSoup
 import requests
@@ -21,6 +22,11 @@ def download(xml_file, metadata_file, output_dir=".", test=False):
 		.map(lambda x: parse(x).strftime("%Y-%m-%d")).to_list()
 	print(f"Downloading {len(links)} episodes into {output_dir}")
 	for i in tqdm(range(len(links))):
+		# if episode already exists, skip
+		file_path = pathlib.Path(output_dir) / f"{slugs[i]}.mp3"
+		if os.path.exists(file_path) and not test:
+			print(f"Skipping episode {slugs[i]} because it already exists.")
+			continue
 		if not test:
 			res = requests.get(links[i])
 			file_path = pathlib.Path(output_dir) / f"{slugs[i]}.mp3"

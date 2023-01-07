@@ -13,6 +13,10 @@ def transcribe_all(input_dir, metadata_file, output_dir, model_name="small.en", 
         metadata = json.load(f)
     for episode in metadata:
         episode_file = pathlib.Path(input_dir) / f"{episode['slug']}.{audio_format}"
+        # Make sure the file exists
+        if not episode_file.is_file():
+            print(f"Skipping {episode['slug']} because it doesn't exist.")
+            continue
         print(f"Transcribing {episode_file} into {output_dir}...")
         result = model.transcribe(str(episode_file))
         output = seq(result["segments"]).map(lambda x: {

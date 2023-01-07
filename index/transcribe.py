@@ -17,6 +17,11 @@ def transcribe_all(input_dir, metadata_file, output_dir, model_name="small.en", 
         if not episode_file.is_file():
             print(f"Skipping {episode['slug']} because it doesn't exist.")
             continue
+        # Check if the output file already exists
+        output_file = pathlib.Path(output_dir) / f"{episode['slug']}.segments.json"
+        if output_file.is_file():
+            print(f"Skipping {episode['slug']} because it has already been transcribed.")
+            continue
         print(f"Transcribing {episode_file} into {output_dir}...")
         result = model.transcribe(str(episode_file))
         output = seq(result["segments"]).map(lambda x: {
@@ -24,7 +29,7 @@ def transcribe_all(input_dir, metadata_file, output_dir, model_name="small.en", 
             "start": x["start"], 
             "end": x["end"]
         }).to_list()
-        with open(f"{episode['slug']}.segments.json", "w+") as f:
+        with open(output_file, "w+") as f:
             json.dump(output, f)
 
 

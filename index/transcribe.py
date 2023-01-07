@@ -23,14 +23,17 @@ def transcribe_all(input_dir, metadata_file, output_dir, model_name="small.en", 
             print(f"Skipping {episode['slug']} because it has already been transcribed.")
             continue
         print(f"Transcribing {episode_file} into {output_dir}...")
-        result = model.transcribe(str(episode_file))
-        output = seq(result["segments"]).map(lambda x: {
-            "text": x["text"], 
-            "start": x["start"], 
-            "end": x["end"]
-        }).to_list()
-        with open(output_file, "w+") as f:
-            json.dump(output, f)
+        try:
+            result = model.transcribe(str(episode_file))
+            output = seq(result["segments"]).map(lambda x: {
+                "text": x["text"], 
+                "start": x["start"], 
+                "end": x["end"]
+            }).to_list()
+            with open(output_file, "w+") as f:
+                json.dump(output, f)
+        except Exception as e:
+            print(f"Failed to transcribe {episode_file}, skipping. ({e})")
 
 
 if __name__ == '__main__':

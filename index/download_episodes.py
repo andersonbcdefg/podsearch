@@ -24,14 +24,16 @@ def download(xml_file, metadata_file, output_dir=".", test=False):
 	for i in tqdm(range(len(links))):
 		# if episode already exists, skip
 		file_path = pathlib.Path(output_dir) / f"{slugs[i]}.mp3"
-		if os.path.exists(file_path) and not test:
+		if os.path.isfile(file_path):
 			print(f"Skipping episode {slugs[i]} because it already exists.")
 			continue
 		if not test:
-			res = requests.get(links[i])
-			file_path = pathlib.Path(output_dir) / f"{slugs[i]}.mp3"
-			with open(file_path, "wb+") as f:
-				f.write(res.content)
+			try:
+				res = requests.get(links[i])
+				with open(file_path, "wb+") as f:
+					f.write(res.content)
+			except Exception as e:
+				print(f"Failed to download episode {titles[i]}: {e}")
 	metadata = [
 		{
 			"title": titles[i],

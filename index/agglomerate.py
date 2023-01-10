@@ -1,6 +1,7 @@
 import fire
 import json
 import math
+import pathlib
 
 def agglomerate(input_file, output_file, chunk_length=180, overlap=60):
     mini_chunk_length = math.gcd(chunk_length, overlap)
@@ -72,8 +73,8 @@ def agglomerate_all(metadata_file, input_dir, output_dir, chunk_length=180, over
     with open(metadata_file, "r") as f:
         metadata = json.load(f)
     for episode in metadata:
-        in_file = f"{input_dir}/{episode['slug']}.segments.json"
-        out_file = f"{output_dir}/{episode['slug']}.chunks.json"
+        in_file = pathlib.Path(f"{input_dir}/{episode['slug']}.segments.json")
+        out_file = pathlib.Path(f"{output_dir}/{episode['slug']}.chunks.json")
         # Make sure input file exists
         if not in_file.is_file():
             print(f"Input file {in_file} does not exist. Skipping...")

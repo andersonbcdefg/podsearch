@@ -72,6 +72,16 @@ def agglomerate_all(metadata_file, input_dir, output_dir, chunk_length=180, over
     with open(metadata_file, "r") as f:
         metadata = json.load(f)
     for episode in metadata:
+        in_file = f"{input_dir}/{episode['slug']}.segments.json"
+        out_file = f"{output_dir}/{episode['slug']}.chunks.json"
+        # Make sure input file exists
+        if not in_file.is_file():
+            print(f"Input file {in_file} does not exist. Skipping...")
+            continue
+        # Make sure output file doesn't exist
+        if out_file.is_file():
+            print(f"Output file {out_file} already exists. Skipping...")
+            continue
         agglomerate(f"{input_dir}/{episode['slug']}.segments.json", 
             f"{output_dir}/{episode['slug']}.chunks.json", chunk_length, overlap)
 

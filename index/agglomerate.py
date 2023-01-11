@@ -66,7 +66,7 @@ def agglomerate(input_file, output_file, chunk_length=180, overlap=60):
         current_chunk['text'] = current_chunk['text'].strip()
         chunks.append(current_chunk)
     
-    with open(input_file + ".chunks.json", "w+") as f:
+    with open(output_file, "w+") as f:
         json.dump(chunks, f)
 
 def agglomerate_all(metadata_file, input_dir, output_dir, chunk_length=180, overlap=60):

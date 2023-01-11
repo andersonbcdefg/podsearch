@@ -19,14 +19,17 @@ def agglomerate(input_file, output_file, chunk_length=180, overlap=60):
             current_mini_chunk['start_time'] = segment['start']
         current_mini_chunk['end_time'] = segment['end']
         current_mini_chunk['text'] += segment['text']
-        if current_mini_chunk['end_time'] - current_mini_chunk['start_time'] >= mini_chunk_length and\
-            current_mini_chunk['text'][-1] in ".!?":
-            mini_chunks.append(current_mini_chunk)
-            current_mini_chunk = {
-                "start_time": 0,
-                "end_time": 0,
-                "text": ""
-            }
+        curr_length = current_mini_chunk['end_time'] - current_mini_chunk['start_time']
+        if curr_length >= mini_chunk_length:
+            # This way it can't be too long, even if no punctuation is found.
+            # We eventually cut run-on sentences.
+            if current_mini_chunk['text'][-1] in ".!?" or curr_length >= mini_chunk_length * 1.5:
+                mini_chunks.append(current_mini_chunk)
+                current_mini_chunk = {
+                    "start_time": 0,
+                    "end_time": 0,
+                    "text": ""
+                }
     if current_mini_chunk['text'] != "":
         mini_chunks.append(current_mini_chunk)
     

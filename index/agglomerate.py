@@ -83,6 +83,7 @@ def agglomerate_all(metadata_file, input_dir, output_dir, chunk_length=180, over
         if out_file.is_file():
             print(f"Output file {out_file} already exists. Skipping...")
             continue
+        print(f"Agglomerating {in_file}, output {out_file}...")
         agglomerate(f"{input_dir}/{episode['slug']}.segments.json", 
             f"{output_dir}/{episode['slug']}.chunks.json", chunk_length, overlap)
 

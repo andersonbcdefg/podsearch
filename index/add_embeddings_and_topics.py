@@ -49,7 +49,7 @@ def add_embeddings_and_topics(in_file, out_file, api_key, rate_limit=5):
     with open(out_file, "w+") as f:
             json.dump(chunks, f)
 
-def add_embeddings_and_topics_all(metadata_file, in_dir, out_dir, api_key, rate_limit=6):
+def add_embeddings_and_topics_all(metadata_file, input_dir, output_dir, api_key, rate_limit=6):
     with open(metadata_file, "r") as f:
         metadata = json.load(f)
     for episode in metadata:

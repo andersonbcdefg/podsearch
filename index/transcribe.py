@@ -5,7 +5,7 @@ import json
 import pathlib
 import tqdm
 
-def transcribe_all(input_dir, metadata_file, output_dir, model_name="small.en", audio_format="mp3"):
+def transcribe_all(metadata_file, input_dir, output_dir, model_name="small.en", audio_format="mp3"):
     print(f"Loading model {model_name}...")
     model = whisper.load_model(model_name)
     print("Model loaded. Transcribing...")

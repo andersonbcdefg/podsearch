@@ -4,6 +4,7 @@ import json
 from functional import seq
 import time
 import pathlib
+from tqdm.autonotebook import tqdm
 
 
 def get_topics(prompt, api_key, model="code-davinci-002"):
@@ -31,10 +32,10 @@ def add_embeddings_and_topics(in_file, out_file, api_key, rate_limit=5):
     # Open chunk file and load
     with open(in_file, "r+") as f:
         chunks = json.load(f)
-        for chunk in chunks:
+        for chunk in tqdm(chunks):
             # Add topics
             prompt = f"""const input = "{chunk["text"]}";\n\n// Create list of main topics/people in the input string. (Max 10)\n\nconst topics = ["""
-            chunk["topics"] = get_topics(prompt, api_key, model)
+            chunk["topics"] = get_topics(prompt, api_key)
             # Add embedding
             chunk["embedding"] = openai.Embedding.create(input = [chunk["text"]], model="text-embedding-ada-002")['data'][0]['embedding']
             time.sleep(rate_limit)

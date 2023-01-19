@@ -26,14 +26,6 @@ def get_topics(prompt, api_key, model="code-davinci-002"):
         .map(lambda x: x.strip()[1:-1]).distinct().to_list()
     return topics
 
-def add_embeddings(chunks, api_key, model="text-embedding-ada-002"):
-    
-    with open(chunk_file, "r+") as f:
-        chunks = json.load(f)
-        for chunk in chunks:
-            chunk["embedding"] = openai.Embedding.create(input = [text], model=model)['data'][0]['embedding']
-        
-
 def add_embeddings_and_topics(in_file, out_file, api_key, rate_limit=5):
     openai.api_key = api_key
     # Open chunk file and load
@@ -44,7 +36,7 @@ def add_embeddings_and_topics(in_file, out_file, api_key, rate_limit=5):
             prompt = f"""const input = "{chunk["text"]}";\n\n// Create list of main topics/people in the input string. (Max 10)\n\nconst topics = ["""
             chunk["topics"] = get_topics(prompt, api_key, model)
             # Add embedding
-            chunk["embedding"] = openai.Embedding.create(input = [chunk["text"]], model=model)['data'][0]['embedding']
+            chunk["embedding"] = openai.Embedding.create(input = [chunk["text"]], model="text-embedding-ada-002")['data'][0]['embedding']
             time.sleep(rate_limit)
     with open(out_file, "w+") as f:
             json.dump(chunks, f)

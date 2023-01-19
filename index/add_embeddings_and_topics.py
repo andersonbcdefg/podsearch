@@ -41,10 +41,10 @@ def add_embeddings_and_topics(in_file, out_file, api_key, rate_limit=5):
         chunks = json.load(f)
         for chunk in chunks:
             # Add topics
-            prompt = f"""const input = "{text}";\n\n// Create list of main topics/people in the input string. (Max 10)\n\nconst topics = ["""
+            prompt = f"""const input = "{chunk["text"]}";\n\n// Create list of main topics/people in the input string. (Max 10)\n\nconst topics = ["""
             chunk["topics"] = get_topics(prompt, api_key, model)
             # Add embedding
-            chunk["embedding"] = openai.Embedding.create(input = [text], model=model)['data'][0]['embedding']
+            chunk["embedding"] = openai.Embedding.create(input = [chunk["text"]], model=model)['data'][0]['embedding']
             time.sleep(rate_limit)
     with open(out_file, "w+") as f:
             json.dump(chunks, f)

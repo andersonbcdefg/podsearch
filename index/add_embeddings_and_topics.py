@@ -7,11 +7,12 @@ import pathlib
 from tqdm.autonotebook import tqdm
 
 
-def get_topics(prompt, api_key, model="code-davinci-002"):
+def get_topics(inputs, api_key, model="code-davinci-002"):
+    prompts = seq(inputs).map(lambda x: f"""const input = "{x}";\n\n// Create list of main topics/people in the input string. (Max 10)\n\nconst topics = [""")
     openai.api_key = api_key
     response = openai.Completion.create(
         model=model,
-        prompt=prompt,
+        prompt=list(prompts),
         temperature=0.1,
         max_tokens=200,
         top_p=1.0,
@@ -19,28 +20,35 @@ def get_topics(prompt, api_key, model="code-davinci-002"):
         presence_penalty=0.0,
         stop=["];"]
     )
-    completion = response["choices"][0]["text"]
-    topics = seq(completion.split(","))\
+    completions = [response["choices"][i]["text"] for i in range(len(inputs))]
+    topic_lists = seq(completions).map(lambda completion: seq(completion.split(","))\
         .map(lambda x: x.strip())\
         .filter(lambda x: x != "")\
         .filter(lambda x: x[0] in ["'", '"'] and x[-1] in ["'", '"'])\
-        .map(lambda x: x.strip()[1:-1]).distinct().to_list()
-    return topics
+        .map(lambda x: x.strip()[1:-1]).distinct().to_list()).to_list()
+    return topic_lists
 
 def add_embeddings_and_topics(in_file, out_file, api_key, rate_limit=5):
     openai.api_key = api_key
     # Open chunk file and load
     with open(in_file, "r+") as f:
         chunks = json.load(f)
-        for chunk in tqdm(chunks):
+        out_chunks = []
+        for i in range(0, len(chunks), 20):
+            chunk_slice = chunks[i:i+20]
+            inputs = [chunk["text"] for chunk in chunk_slice]
             # Add topics
-            prompt = f"""const input = "{chunk["text"]}";\n\n// Create list of main topics/people in the input string. (Max 10)\n\nconst topics = ["""
-            chunk["topics"] = get_topics(prompt, api_key)
+            topics = get_topics(inputs, api_key)
             # Add embedding
-            chunk["embedding"] = openai.Embedding.create(input = [chunk["text"]], model="text-embedding-ada-002")['data'][0]['embedding']
+            response = openai.Embedding.create(input = inputs, model="text-embedding-ada-002")
+            embeddings = seq(response["data"]).sorted(key=lambda x: x["index"]).map(lambda x: x["embedding"]).to_list()
+            for i, chunk in enumerate(chunk_slice):
+                chunk["embedding"] = embeddings[i]
+                chunk["topics"] = topics[i]
+                out_chunks.append(chunk)
             time.sleep(rate_limit)
     with open(out_file, "w+") as f:
-            json.dump(chunks, f)
+            json.dump(out_chunks, f)
 
 def add_embeddings_and_topics_all(metadata_file, input_dir, output_dir, api_key, rate_limit=6):
     with open(metadata_file, "r") as f:

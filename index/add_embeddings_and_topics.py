@@ -66,5 +66,3 @@ def add_embeddings_and_topics_all(metadata_file, input_dir, output_dir, api_key,
             continue
         print(f"Adding topics and embeddings to {in_file}, output {out_file}...")
         add_embeddings_and_topics(in_file, out_file, api_key, rate_limit)
-
-

@@ -10,7 +10,7 @@ from datetime import datetime
 from dateutil.parser import parse
 import pathlib
 
-def download(xml_file, metadata_file, output_dir=".", test=False):
+def download_from_rss(xml_file, metadata_file, output_dir=".", test=False):
 	feed = open(xml_file, 'r+')
 	soup = BeautifulSoup(feed, 'xml')
 	items = soup.find_all('item')
@@ -45,6 +45,23 @@ def download(xml_file, metadata_file, output_dir=".", test=False):
 	with open(metadata_file, "w+") as f:
 		json.dump(metadata, f)
 		
+def download_from_metadata(metadata_file, output_dir=".", test=False):
+	with open(metadata_file, "r") as f:
+		metadata = json.load(f)
+	print(f"Downloading {len(metadata)} episodes into {output_dir}")
+	for i in tqdm(range(len(metadata))):
+		# if episode already exists, skip
+		file_path = pathlib.Path(output_dir) / f"{metadata[i]['slug']}.mp3"
+		if os.path.isfile(file_path):
+			print(f"Skipping episode {metadata[i]['slug']} because it already exists.")
+			continue
+		if not test:
+			try:
+				res = requests.get(metadata[i]['link'])
+				with open(file_path, "wb+") as f:
+					f.write(res.content)
+			except Exception as e:
+				print(f"Failed to download episode {metadata[i]['title']}: {e}")
 
 if __name__ == '__main__':
-	fire.Fire(download)
+	fire.Fire(download_from_rss)

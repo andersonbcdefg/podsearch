@@ -9,7 +9,6 @@ LOG_LEVEL=error
 
 cd $DIR
 poetry install
-export OPENAI_API_KEY="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"
 
 exec poetry run gunicorn server:app \
   --name $NAME \

@@ -8,12 +8,15 @@ with open("../.api_key", "r") as f:
     api_key = f.read().strip()
 openai.api_key = api_key
 
+with open("../.auth_token", "r") as f:
+    auth_token = f.read().strip()
+
 dataset = load_dataset("andersonbcdefg/tafs_index", split="train")
 dataset.add_faiss_index(column="embedding")
 
 
 def is_valid(token):
-    return token == "55194446-0511-4a0e-9bbe-c8013bc70050"
+    return token == auth_token
 
 
 def get_embedding(text):

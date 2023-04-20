@@ -63,6 +63,6 @@ def semantic_search(
     token = credentials.credentials
     # Use the token to authenticate the user
     if not is_valid(token):
-        raise HTTPException(status_code=403, detail="Unauthorized request.")
+        raise HTTPException(status_code=403, detail="Unauthorized request." + token)
     else:
         return {"results": search(query, k)}

@@ -1,4 +1,4 @@
-install:
+server_install:
     sudo apt -y upgrade  
     sudo apt -y install python3-pip  # Install Python
     pip install poetry  # Install Poetry

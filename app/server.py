@@ -58,7 +58,7 @@ def semantic_search(
     k: int = 10,
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ):
-    if not credentials.scheme == "bearer":
+    if credentials.scheme not in ["bearer", "Bearer"]:
         raise HTTPException(
             status_code=403, detail="Wrong authentication scheme: " + credentials.scheme
         )

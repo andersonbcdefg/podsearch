@@ -12,3 +12,15 @@ python-multipart = "~0.0.5"
 pydantic = {extras = ["email"], version = "~1.8.1"}
 Jinja2 = "^3.0.1"
 gunicorn = "^20.1.0"
+datasets = "^2.11.0"
+pyfunctional = "^1.4.3"
+openai = "^0.27.4"
+fire = "^0.5.0"
+lxml = "^4.9.2"
+python-slugify = "^8.0.1"
+beautifulsoup4 = "^4.12.2"
+tqdm = "^4.65.0"
+
+[tool.ruff]
+# Allow lines to be as long as 100 characters.
+line-length = 100

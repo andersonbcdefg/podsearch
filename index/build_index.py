@@ -1,7 +1,6 @@
 import json
 import pathlib
-import fire
-from functional import seq
+
 
 def build_index(metadata_file, input_dir, output_path):
     output_file = pathlib.Path(output_path)
@@ -28,4 +27,4 @@ def build_index(metadata_file, input_dir, output_path):
         index.extend(episode_index)
     # Write index to file
     with open(output_path, "w+") as f:
-        json.dump(index, f)        
+        json.dump(index, f)

@@ -59,7 +59,7 @@ def semantic_search(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ):
     if not credentials.scheme == "bearer":
-        raise HTTPException(status_code=403, detail="Unauthorized request.")
+        raise HTTPException(status_code=403, detail="Wrong authentication scheme.")
     token = credentials.credentials
     # Use the token to authenticate the user
     if not is_valid(token):

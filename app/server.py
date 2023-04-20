@@ -3,12 +3,17 @@ import os
 import numpy as np
 import openai
 from datasets import load_dataset
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
 dataset = load_dataset("andersonbcdefg/tafs_index", split="train")
 dataset.add_faiss_index(column="embedding")
+
+
+def is_valid(token):
+    return token == "55194446-0511-4a0e-9bbe-c8013bc70050"
 
 
 def get_embedding(text):
@@ -39,6 +44,7 @@ def search(query, k=10):
 
 
 app = FastAPI()
+security = HTTPBearer()
 
 
 @app.get("/")
@@ -47,5 +53,16 @@ def read_root():
 
 
 @app.get("/semantic-search")
-def semantic_search(query: str, k: int = 10):
-    return {"results": search(query, k)}
+def semantic_search(
+    query: str,
+    k: int = 10,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+):
+    if not credentials.scheme == "bearer":
+        raise HTTPException(status_code=403, detail="Unauthorized request.")
+    token = credentials.credentials
+    # Use the token to authenticate the user
+    if not is_valid(token):
+        raise HTTPException(status_code=403, detail="Unauthorized request.")
+    else:
+        return {"results": search(query, k)}

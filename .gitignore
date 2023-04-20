@@ -1,3 +1,6 @@
+# env variables
+.api_key
+
 # logs
 logs/
 

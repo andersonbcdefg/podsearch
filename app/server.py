@@ -1,12 +1,12 @@
-import os
-
 import numpy as np
 import openai
 from datasets import load_dataset
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-openai.api_key = os.environ["OPENAI_API_KEY"]
+with open("../.api_key", "r") as f:
+    api_key = f.read().strip()
+openai.api_key = api_key
 
 dataset = load_dataset("andersonbcdefg/tafs_index", split="train")
 dataset.add_faiss_index(column="embedding")

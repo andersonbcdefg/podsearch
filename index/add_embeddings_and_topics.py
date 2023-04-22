@@ -5,6 +5,9 @@ import time
 import openai
 from functional import seq
 
+## TODO: Option to use Instructor model for embeddings instead of OpenAI
+# (768 dimension; comparable performance; so more efficient)
+
 # def get_topics(inputs, api_key, model="code-davinci-002"):
 #     prompts = seq(inputs).map(
 #         lambda x: f"""const input = "{x}";\n\n// Create list of main topics/"""

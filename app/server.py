@@ -11,7 +11,7 @@ openai.api_key = api_key
 with open("../.auth_token", "r") as f:
     auth_token = f.read().strip()
 
-dataset = load_dataset("andersonbcdefg/tafs_index", split="train")
+dataset = load_dataset("andersonbcdefg/tafs_index_v2", split="train")
 dataset.add_faiss_index(column="embedding")
 
 
